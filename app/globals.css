@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --animation-primary: all 0.5s cubic-bezier(0.7, 0, 0.3, 1);
 }
 
 @theme inline {
@@ -23,4 +24,70 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.btn-click {
+  cursor: pointer;
+  border: 0;
+  color: var(--primary-dark);
+  background: transparent;
+  border-radius: 2.125em;
+  min-width: 1em;
+  height: 4.25em;
+  padding: 0;
+  font-size: 1em;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-decoration: none;
+  will-change: transform;
+  outline: 0;
+  transform: translateZ(0) rotate(0.001deg);
+}
+
+.btn-click:hover {
+  cursor: pointer;
+}
+
+.btn-link .btn-click:after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  bottom: -1em;
+  left: 50%;
+  transform: translateX(-50%, -50%);
+  background-color: #fff;
+  will-change: transform;
+}
+.btn-link .btn-click:hover:after {
+  bottom: 10px;
+  transition: all ease 0.6s;
+}
+.btn-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 2.5em;
+  z-index: 2;
+  position: relative;
+  transform: rotate(0.001deg);
+  pointer-events: none;
+  will-change: transform, color;
+}
+
+.btn-click:hover {
+  text-decoration: none;
+}
+
+@layer components {
+  .code-by {
+    @apply relative inline-block;
+    transition: var(--animation-primary);
+  }
 }
