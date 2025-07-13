@@ -90,4 +90,13 @@ body {
     @apply relative inline-block;
     transition: var(--animation-primary);
   }
+  .hamed {
+    @apply relative px-1;
+    transition: var(--animation-primary);
+  }
+  .hamed .ostovar {
+    @apply absolute pl-3 opacity-100 top-0 left-0 whitespace-nowrap;
+    transition: var(--animation-primary);
+    transform: translateX(3em);
+  }
 }
