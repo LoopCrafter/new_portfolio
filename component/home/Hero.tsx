@@ -3,6 +3,10 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Hanger from "./Hanger";
+import { SplitText } from "gsap/SplitText";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(SplitText, ScrollTrigger);
 
 export default function HeroHeader() {
   const container = useRef<HTMLDivElement>(null);
@@ -13,30 +17,29 @@ export default function HeroHeader() {
   useGSAP(
     () => {
       const tl = gsap.timeline();
-      tl.from(".hero-title", {
-        y: 40,
+      const heroTitleSplit = SplitText.create(".hero-title", {
+        type: "chars",
+      });
+      const heroSubSplit = SplitText.create(".hero-subtitle", {
+        type: "lines",
+        mask: "lines",
+      });
+      tl.from(heroTitleSplit.chars, {
+        y: 50,
+        stagger: 0.05,
+        ease: "power2.inOut",
         opacity: 0,
-        duration: 1,
+      });
+      tl.from(heroSubSplit.lines, {
+        y: 50,
+        ease: "power2.inOut",
+        opacity: 0,
+      });
+      tl.from(".location", {
+        xPercent: -100,
         ease: "power3.out",
-      })
-        .from(
-          ".hero-subtitle",
-          {
-            y: 20,
-            opacity: 0,
-            duration: 0.6,
-          },
-          "-=0.5"
-        )
-        .from(
-          ".hero-btn",
-          {
-            scale: 0.8,
-            opacity: 0,
-            duration: 0.5,
-          },
-          "-=0.4"
-        );
+        opacity: 0,
+      });
       // marquee setup
       if (!marqueeText.current || !marqueeClone.current) return;
 
@@ -87,7 +90,7 @@ export default function HeroHeader() {
       className="relative min-h-screen  bg-slate-900 flex items-center justify-center px-4"
     >
       {/* --- Left Info --- */}
-      <div className="absolute left-0 top-[40%] -translate-y-1/2">
+      <div className="absolute left-0 top-[45%] -translate-y-1/2 location">
         <Hanger height={120} />
         <p className="absolute top-1/2 -translate-y-1/2 px-16 text-black text-lg">
           <span className="block">Located </span>
@@ -114,16 +117,13 @@ export default function HeroHeader() {
           Hi, I'm Hamed
         </h1>
         <p className="hero-subtitle text-lg md:text-xl text-[#8892b0] mb-8">
-          Front-End Developer specializing in React & Next.js
+          Front-End Engineer specializing in React & Next.js
         </p>
-        <button className="hero-btn px-6 py-3 text-[#0a192f] bg-[#64ffda] rounded-full font-semibold hover:bg-[#52e6c3] transition-all duration-300">
-          View Projects
-        </button>
       </div>
 
       {/* --- Marquee --- */}
       <div
-        className="absolute bottom-[10vh] left-0 w-full overflow-hidden"
+        className="absolute bottom-[5vh] left-0 w-full overflow-hidden"
         ref={marqueeWrapper}
       >
         <div className="relative inline-block whitespace-nowrap font-bold big-name">
