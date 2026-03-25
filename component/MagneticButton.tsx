@@ -87,7 +87,7 @@ export default function MagneticWrapper({
 
   if (Children.count(children) !== 1 || !isValidElement(children)) {
     console.warn(
-      "MagneticWrapper only accepts a single valid React element as a child"
+      "MagneticWrapper only accepts a single valid React element as a child",
     );
     return null;
   }

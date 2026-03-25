@@ -81,7 +81,7 @@ export default function HeroHeader() {
         window.removeEventListener("resize", handleResize);
       };
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
@@ -89,7 +89,6 @@ export default function HeroHeader() {
       ref={container}
       className="relative min-h-screen  bg-slate-900 flex items-center justify-center px-4"
     >
-      {/* --- Left Info --- */}
       <div className="absolute left-0 top-[45%] -translate-y-1/2 location">
         <Hanger height={120} />
         <p className="absolute top-1/2 -translate-y-1/2 px-16 text-black text-lg">
@@ -98,7 +97,7 @@ export default function HeroHeader() {
           <span className="block">Austria</span>
         </p>
         <div className="digital-ball z-[500] absolute right-[1.23em] left-auto top-[1.23em] size-[4.2em] w-[82px] h-[82px] overflow-hidden rounded-full">
-          <div className="overlay animate-digitalball absolute w-full h-full top-0 left-0"></div>
+          <div className="overlay absolute w-full h-full top-0 left-0 bg-slate-900"></div>
           <div className="globe">
             <div className="globe-wrap">
               <div className="circle"></div>
@@ -117,7 +116,7 @@ export default function HeroHeader() {
           Hi, I'm Hamed
         </h1>
         <p className="hero-subtitle text-lg md:text-xl text-[#8892b0] mb-8">
-          Front-End Engineer specializing in React & Next.js
+          Software Engineer specializing in React & Next.js
         </p>
       </div>
 

@@ -18,8 +18,7 @@ export default function RootLayout({
       <body>
         <Navbar />
         <MouseTracker />
-
-        {children}
+        <div className="content-wrapper">{children}</div>
       </body>
     </html>
   );
