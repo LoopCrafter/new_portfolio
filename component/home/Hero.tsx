@@ -116,7 +116,7 @@ export default function HeroHeader() {
           Hi, I'm Hamed
         </h1>
         <p className="hero-subtitle text-lg md:text-xl text-[#8892b0] mb-8">
-          Software Engineer specializing in React & Next.js
+          Software Engineer specializing in MERN Stack
         </p>
       </div>
 
