@@ -17,9 +17,7 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { href: "https://www.instagram.com/", label: "Instagram" },
   { href: "https://www.linkedin.com/", label: "LinkedIn" },
-  { href: "https://x.com/", label: "X / Twitter" },
   { href: "https://github.com/", label: "GitHub" },
 ];
 
@@ -104,12 +102,9 @@ export default function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             <div className="socials">
               <h5 className="sidebar-kicker">Socials</h5>
 
-              <ul className="sidebar-social-list">
+              <ul className="sidebar-social-list grid grid-cols-2">
                 {socialLinks.map((item) => (
-                  <li
-                    key={item.href}
-                    className="btn btn-link btn-link-external"
-                  >
+                  <li key={item.href} className="btn btn-link-external">
                     <MagneticWrapper
                       strength={20}
                       textStrength={10}

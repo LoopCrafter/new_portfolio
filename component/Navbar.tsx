@@ -15,24 +15,42 @@ const Navbar = () => {
   const createByRef = useRef<HTMLDivElement | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   useEffect(() => {
     if (!isMenuOpen) {
-      setIsScrolled(window.scrollY > 200);
+      const scrolled = window.scrollY > 200;
+      setIsScrolled(scrolled);
+      headerRef.current?.classList.toggle("scrolled", scrolled);
+
+      ScrollTrigger.refresh();
     }
   }, [isMenuOpen]);
+
   useGSAP(
     () => {
       const trigger = ScrollTrigger.create({
-        start: 200,
-        onEnter: () => {
-          setIsScrolled(true);
-          headerRef.current?.classList.add("scrolled");
-        },
-        onLeaveBack: () => {
-          setIsScrolled(false);
-          headerRef.current?.classList.remove("scrolled");
+        start: 0,
+        end: "max",
+        onUpdate: (self) => {
+          const scrolled = self.scroll() > 200;
+          console.log("scrolled ", scrolled);
+          setIsScrolled((prev) => {
+            if (prev !== scrolled) {
+              headerRef.current?.classList.toggle("scrolled", scrolled);
+              return scrolled;
+            }
+            return prev;
+          });
         },
       });
+
+      const syncScrollState = () => {
+        const scrolled = window.scrollY > 200;
+        headerRef.current?.classList.toggle("scrolled", scrolled);
+        setIsScrolled(scrolled);
+      };
+
+      syncScrollState();
 
       return () => {
         trigger.kill();
@@ -40,31 +58,31 @@ const Navbar = () => {
     },
     { scope: headerRef },
   );
-
+  console.log("isMenuOpen ", isMenuOpen);
   return (
     <>
       <header
         ref={headerRef}
-        className="absolute top-0 left-0 flex w-full items-center justify-between p-6 z-[102]"
+        className="absolute top-0 left-0 flex w-full items-center justify-between p-6 z-[102] px-16 py-10"
       >
         <MagneticWrapper strength={20} textStrength={10}>
           <Link href="/">
-            <div className="flex items-center justify-start gap-2">
-              <span>©</span>
-
-              <div
-                className="relative flex overflow-hidden group"
-                ref={createByRef}
+            <div className="flex items-center justify-start gap-2 ">
+              <span
+                className="created-logo flex"
+                // style={{ transform: "rotate(0.001deg)" }}
               >
-                <span className="overflow-hidden transition-transform duration-300 group-hover:-translate-x-full">
-                  Code by
-                </span>
-
-                <span className="transition-transform duration-300 group-hover:-translate-x-full">
-                  <span> Hamed </span>
-                  <span> Ostovar </span>
-                </span>
-              </div>
+                <div className="credit">
+                  <span>©</span>
+                </div>
+                <div className="overflow-hidden relative">
+                  <span className="code-by">Code by </span>
+                  <span className="hamed">
+                    <span className="hamed-span">Hamed</span>{" "}
+                    <span className="ostovar">Ostovar</span>
+                  </span>
+                </div>
+              </span>
             </div>
           </Link>
         </MagneticWrapper>
@@ -97,24 +115,25 @@ const Navbar = () => {
           </li>
         </ul>
         <MagneticWrapper strength={10} textStrength={60}>
-          <button
-            type="button"
-            aria-label="Toggle menu"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            className={`
+          <div className="absolute">
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              className={`
           btn-hamburger  overflow-hidden
           ${
             isScrolled || isMenuOpen
               ? "[transform:translateY(0%)_scale(1)_rotate(0.001deg)] [transition-timing-function:cubic-bezier(0.34,1.5,0.64,1)]"
               : "[transform:translateY(0%)_scale(0)_rotate(0.001deg)] [transition-timing-function:cubic-bezier(0.36,0,0.66,0)]"
           }
-          ${isMenuOpen ? "bg-[var(--color-blue)]" : "bg-black"}
+          ${isMenuOpen ? "bg-[var(--color-blue)]" : "bg-gray-800"}
         `}
-          >
-            <div className={`btn-fill`} />
+            >
+              <div className={`btn-fill`} />
 
-            <div
-              className={`
+              <div
+                className={`
            
             ${
               isMenuOpen
@@ -122,12 +141,12 @@ const Navbar = () => {
                 : "bg-[var(--color-dark)] shadow-[inset_0px_0px_0px_1px_var(--color-border-light)]"
             }
           `}
-            />
+              />
 
-            <div className="relative flex h-full w-full items-center justify-center">
-              <div className="absolute h-[10%] w-[30%] opacity-100">
-                <span
-                  className={`
+              <div className="relative flex h-full w-full items-center justify-center">
+                <div className="absolute h-[10%] w-[30%] opacity-100">
+                  <span
+                    className={`
                 absolute left-1/2 block h-px w-full bg-white
                 transition-all duration-300
                 ${
@@ -136,9 +155,9 @@ const Navbar = () => {
                     : "top-0 -translate-x-1/2 -translate-y-1/2"
                 }
               `}
-                />
-                <span
-                  className={`
+                  />
+                  <span
+                    className={`
                 absolute left-1/2 block h-px w-full bg-white
                 transition-all duration-300
                 ${
@@ -147,12 +166,13 @@ const Navbar = () => {
                     : "top-full -translate-x-1/2 -translate-y-1/2"
                 }
               `}
-                />
-              </div>
+                  />
+                </div>
 
-              <span className="opacity-0 text-white">Menu</span>
-            </div>
-          </button>
+                <span className="opacity-0 text-white">Menu</span>
+              </div>
+            </button>
+          </div>
         </MagneticWrapper>
       </header>
       <SidebarMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />

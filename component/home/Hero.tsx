@@ -1,83 +1,158 @@
 "use client";
+
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import Hanger from "./Hanger";
 import { SplitText } from "gsap/SplitText";
-import ScrollTrigger from "gsap/ScrollTrigger";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
 export default function HeroHeader() {
   const container = useRef<HTMLDivElement>(null);
-  const marqueeWrapper = useRef<HTMLDivElement>(null);
-  const marqueeText = useRef<HTMLHeadingElement>(null);
-  const marqueeClone = useRef<HTMLHeadingElement>(null);
+  const marqueeScroller = useRef<HTMLDivElement>(null);
+  const marqueeWrap1 = useRef<HTMLDivElement>(null);
+  const marqueeWrap2 = useRef<HTMLDivElement>(null);
+  const globeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const tl = gsap.timeline();
+
       const heroTitleSplit = SplitText.create(".hero-title", {
         type: "chars",
       });
+
       const heroSubSplit = SplitText.create(".hero-subtitle", {
         type: "lines",
         mask: "lines",
       });
+
       tl.from(heroTitleSplit.chars, {
         y: 50,
         stagger: 0.05,
         ease: "power2.inOut",
         opacity: 0,
       });
+
       tl.from(heroSubSplit.lines, {
         y: 50,
         ease: "power2.inOut",
         opacity: 0,
       });
+
       tl.from(".location", {
         xPercent: -100,
         ease: "power3.out",
         opacity: 0,
       });
-      // marquee setup
-      if (!marqueeText.current || !marqueeClone.current) return;
 
-      const original = marqueeText.current;
-      const clone = marqueeClone.current;
+      const scroller = marqueeScroller.current;
+      const wrap1 = marqueeWrap1.current;
+      const wrap2 = marqueeWrap2.current;
+      const globe = globeRef.current;
 
-      const positionClone = () => {
-        gsap.set(clone, {
-          position: "absolute",
+      if (!scroller || !wrap1 || !wrap2 || !globe) return;
+
+      let direction = 1;
+
+      const positionSecond = () => {
+        gsap.set(wrap1, {
+          position: "relative",
+          left: 0,
           top: 0,
-          left: original.offsetWidth,
+          xPercent: 0,
+          x: 0,
+        });
+
+        gsap.set(wrap2, {
+          position: "absolute",
+          top: wrap1.offsetTop,
+          left: wrap1.offsetLeft + wrap1.offsetWidth,
+          xPercent: 0,
+          x: 0,
         });
       };
 
-      positionClone();
+      positionSecond();
 
-      const marqueeTl = gsap.timeline({
+      const rollTl = gsap.timeline({
         repeat: -1,
         defaults: { ease: "none" },
+        onReverseComplete() {
+          this.totalTime(this.rawTime() + this.duration() * 10);
+        },
       });
 
-      marqueeTl.to([original, clone], {
+      rollTl.to([wrap1, wrap2], {
         xPercent: -100,
-        duration: 120,
-        ease: "",
+        duration: 30,
+      });
+
+      const scrollTrigger = ScrollTrigger.create({
+        trigger: document.documentElement,
+        start: 0,
+        end: "max",
+        onUpdate(self) {
+          if (self.direction !== direction) {
+            direction *= -1;
+
+            gsap.to(rollTl, {
+              timeScale: direction,
+              duration: 0.25,
+              ease: "power2.out",
+              overwrite: true,
+            });
+          }
+
+          const skewValue = gsap.utils.clamp(-8, 8, self.getVelocity() * 0.01);
+
+          gsap.to(scroller, {
+            skewX: skewValue,
+            duration: 0.2,
+            overwrite: true,
+          });
+
+          gsap.to(scroller, {
+            skewX: 0,
+            duration: 0.6,
+            ease: "power3.out",
+            overwrite: true,
+            delay: 0.05,
+          });
+        },
+      });
+
+      const globeTl = gsap.timeline({
+        repeat: -1,
+        defaults: {
+          ease: "none",
+        },
+      });
+
+      globeTl.to(globe, {
+        rotate: 360,
+        duration: 10,
+        transformOrigin: "50% 50%",
       });
 
       const handleResize = () => {
-        const time = marqueeTl.totalTime();
-        marqueeTl.totalTime(0);
-        positionClone();
-        marqueeTl.totalTime(time);
+        const time = rollTl.totalTime();
+        rollTl.totalTime(0);
+        positionSecond();
+        rollTl.totalTime(time);
+        ScrollTrigger.refresh();
       };
 
       window.addEventListener("resize", handleResize);
 
       return () => {
-        marqueeTl.kill();
+        heroTitleSplit.revert();
+        heroSubSplit.revert();
+        rollTl.kill();
+        globeTl.kill();
+        scrollTrigger.kill();
         window.removeEventListener("resize", handleResize);
       };
     },
@@ -87,18 +162,20 @@ export default function HeroHeader() {
   return (
     <section
       ref={container}
-      className="relative min-h-screen  bg-slate-900 flex items-center justify-center px-4"
+      className="relative flex min-h-screen items-center justify-center bg-slate-900 px-4"
     >
       <div className="absolute left-0 top-[45%] -translate-y-1/2 location">
         <Hanger height={120} />
-        <p className="absolute top-1/2 -translate-y-1/2 px-16 text-black text-lg">
-          <span className="block">Located </span>
-          <span className="block">in the </span>
+        <p className="absolute top-1/2 -translate-y-1/2 px-16 text-lg text-black">
+          <span className="block">Located</span>
+          <span className="block">in</span>
           <span className="block">Austria</span>
         </p>
-        <div className="digital-ball z-[500] absolute right-[1.23em] left-auto top-[1.23em] size-[4.2em] w-[82px] h-[82px] overflow-hidden rounded-full">
-          <div className="overlay absolute w-full h-full top-0 left-0 bg-slate-900"></div>
-          <div className="globe">
+
+        <div className="digital-ball absolute right-[1.23em] top-[1.23em] z-[500] h-[82px] w-[82px] overflow-hidden rounded-full">
+          <div className="overlay absolute left-0 top-0 h-full w-full bg-slate-900"></div>
+
+          <div ref={globeRef} className="globe">
             <div className="globe-wrap">
               <div className="circle"></div>
               <div className="circle"></div>
@@ -110,28 +187,37 @@ export default function HeroHeader() {
         </div>
       </div>
 
-      {/* --- Main Header --- */}
       <div className="max-w-3xl text-center">
-        <h1 className="hero-title text-4xl md:text-6xl font-bold text-[#ccd6f6] mb-4">
+        <h1 className="hero-title mb-4 text-4xl font-bold text-[#ccd6f6] md:text-6xl">
           Hi, I'm Hamed
         </h1>
-        <p className="hero-subtitle text-lg md:text-xl text-[#8892b0] mb-8">
+        <p className="hero-subtitle mb-8 text-lg text-[#8892b0] md:text-xl">
           Software Engineer specializing in MERN Stack
         </p>
       </div>
 
-      {/* --- Marquee --- */}
-      <div
-        className="absolute bottom-[5vh] left-0 w-full overflow-hidden"
-        ref={marqueeWrapper}
-      >
-        <div className="relative inline-block whitespace-nowrap font-bold big-name">
-          <h1 ref={marqueeText} className="inline-block text-white">
-            HAMED OSTOVAR • HAMED OSTOVAR • HAMED OSTOVAR •
-          </h1>
-          <h1 ref={marqueeClone} className="inline-block text-white">
-            HAMED OSTOVAR • HAMED OSTOVAR • HAMED OSTOVAR •
-          </h1>
+      <div className="absolute bottom-[5vh] left-0 w-full overflow-hidden big-name">
+        <div
+          ref={marqueeScroller}
+          className="name-h1 relative whitespace-nowrap will-change-transform"
+        >
+          <div
+            ref={marqueeWrap1}
+            className="name-wrap inline-block whitespace-nowrap text-white"
+          >
+            <h1 className="rolling-name-text">
+              HAMED OSTOVAR • HAMED OSTOVAR • HAMED OSTOVAR •
+            </h1>
+          </div>
+
+          <div
+            ref={marqueeWrap2}
+            className="name-wrap inline-block whitespace-nowrap"
+          >
+            <h1 className="rolling-name-text">
+              HAMED OSTOVAR • HAMED OSTOVAR • HAMED OSTOVAR •
+            </h1>
+          </div>
         </div>
       </div>
     </section>
