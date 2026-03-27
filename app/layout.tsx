@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/component/Navbar";
 import MouseTracker from "@/component/MourseTracker";
+import PageLoader from "@/component/shared/PageLoader";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,6 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <PageLoader />
         <Navbar />
         <MouseTracker />
         <div className="content-wrapper">{children}</div>

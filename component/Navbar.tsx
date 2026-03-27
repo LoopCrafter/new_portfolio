@@ -69,17 +69,17 @@ const Navbar = () => {
           <Link href="/">
             <div className="flex items-center justify-start gap-2 ">
               <span
-                className="created-logo flex"
+                className="created-logo flex gap-2 items-center "
                 // style={{ transform: "rotate(0.001deg)" }}
               >
                 <div className="credit">
                   <span>©</span>
                 </div>
-                <div className="overflow-hidden relative">
+                <div className="overflow-hidden relative text-xl flex items-center">
                   <span className="code-by">Code by </span>
-                  <span className="hamed">
-                    <span className="hamed-span">Hamed</span>{" "}
-                    <span className="ostovar">Ostovar</span>
+                  <span className="hamed flex items-center gap-4">
+                    <span className="hamed-span">Hamed</span>
+                    <span className="ostovar"> Ostovar</span>
                   </span>
                 </div>
               </span>
