@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import Navbar from "@/component/Navbar";
 import MouseTracker from "@/component/MourseTracker";
 import PageLoader from "@/component/shared/PageLoader";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
